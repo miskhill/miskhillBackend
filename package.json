@@ -1,0 +1,26 @@
+{
+  "name": "miskhill-backend",
+  "version": "1.0.0",
+  "description": "Node.js server with Express and Apollo GraphQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "graphql",
+    "apollo"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6",
+    "gel": "^2.1.0"
+  }
+}
