@@ -116,3 +116,9 @@ dist
 # by 'gel instance create' locally, as they might contain instance data
 # that some users might want to be aware of (though typically not committed).
 # gel.toml and dbschema/ are typically committed.
+
+dbschema/edgeql-js
+
+# GraphQL Code Generator output
+generated/
+graphql.schema.json

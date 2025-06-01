@@ -1,32 +1,19 @@
 const express = require('express');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
-const { gql } = require('graphql-tag');
+const fs = require('fs');
+const path = require('path');
+const { gql } = require('graphql-tag'); // gql will be used by ApolloServer if schema is passed as string, but not strictly needed if typeDefs is AST from loadFileSync
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const gel = require('gel');
+const e = require('./dbschema/edgeql-js'); // Import edgeql-js query builder
 
-// Define your GraphQL schema
-const typeDefs = gql`
-  type User {
-    id: ID!
-    name: String!
-    email: String
-  }
-
-  type Query {
-    hello: String
-    users: [User!]
-  }
-
-  type Mutation {
-    createUser(name: String!, email: String): User
-  }
-`;
+const typeDefs = fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf-8');
 
 const client = gel.createClient();
 
-// Define your resolvers
+/** @type {import('./generated/graphql').Resolvers} */
 const resolvers = {
   Query: {
     hello: (parent, args, context, info) => {
@@ -35,27 +22,29 @@ const resolvers = {
     },
     users: async () => {
       console.log('Request received for users resolver - timestamp:', new Date().toISOString());
-      return await client.query(`SELECT User { id, name, email };`);
+      // Use edgeql-js query builder
+      return await e.select(e.User, () => ({
+        id: true,
+        name: true,
+        email: true,
+      })).run(client);
     },
   },
   Mutation: {
     createUser: async (_, { name, email }) => {
       console.log(`Request received to create user: ${name}, ${email} - timestamp:`, new Date().toISOString());
-      const result = await client.queryOne(
-        `INSERT User {
-          name := <str>$name,
-          email := <optional str>$email
-        };`,
-        { name, email },
+      const newUserQuery = e.select(
+        e.insert(e.User, {
+          name: name,
+          email: email,
+        }),
+        () => ({
+          id: true,
+          name: true,
+          email: true,
+        })
       );
-      // The insert query by default returns the id of the new object.
-      // We need to fetch the full object if we want to return it.
-      // Or, adjust the insert query to return more fields.
-      // For simplicity, let's fetch it separately for now.
-      return await client.queryRequiredSingle(
-        `SELECT User { id, name, email } FILTER .id = <uuid>$id;`,
-        { id: result.id },
-      );
+      return await newUserQuery.run(client);
     },
   },
 };

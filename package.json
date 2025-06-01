@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate:edgeql-js": "npx @gel/generate edgeql-js",
+    "codegen": "graphql-codegen --config codegen.yaml"
   },
   "keywords": [
     "nodejs",
@@ -19,8 +21,15 @@
     "@apollo/server": "^4.10.4",
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
+    "gel": "^2.1.0",
     "graphql": "^16.8.1",
-    "graphql-tag": "^2.12.6",
-    "gel": "^2.1.0"
+    "graphql-tag": "^2.12.6"
+  },
+  "devDependencies": {
+    "@gel/generate": "^0.6.3",
+    "@graphql-codegen/cli": "^5.0.6",
+    "@graphql-codegen/introspection": "^4.0.3",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-resolvers": "^4.5.1"
   }
 }
